@@ -77,9 +77,9 @@ app.py</font>
 
 <span class="s2"># 3. 干预决策区</span>
 <span class="s1">st.subheader(</span><span class="s3">&quot; 临床虚拟管理策略&quot;</span><span class="s1">)</span>
-<span class="s1">chk_exercise = st.checkbox(</span><span class="s3">&quot;处方 A：定制化抗阻功能训练&quot;</span><span class="s1">)</span>
-<span class="s1">chk_nutrition = st.checkbox(</span><span class="s3">&quot;处方 B：高蛋白膳食与纠正贫血&quot;</span><span class="s1">)</span>
-<span class="s1">chk_biomed = st.checkbox(</span><span class="s3">&quot;处方 C：微观代谢纠正与抗炎调理&quot;</span><span class="s1">)</span>
+<span class="s1">chk_exercise = st.checkbox(</span><span class="s3">&quot;处方 A:定制化抗阻功能训练&quot;</span><span class="s1">)</span>
+<span class="s1">chk_nutrition = st.checkbox(</span><span class="s3">&quot;处方 B:高蛋白膳食与纠正贫血&quot;</span><span class="s1">)</span>
+<span class="s1">chk_biomed = st.checkbox(</span><span class="s3">&quot;处方 C:微观代谢纠正与抗炎调理&quot;</span><span class="s1">)</span>
 
 <span class="s2"># 4. 计算引擎</span>
 <span class="s0">if </span><span class="s1">st.button(</span><span class="s3">&quot; 启动临床机制推演&quot;</span><span class="s1">):</span>
