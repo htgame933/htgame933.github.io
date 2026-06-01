@@ -8,16 +8,16 @@ from sklearn.ensemble import RandomForestClassifier
 # 设置页面
 st.set_page_config(page_title="老年肌少症数字孪生系统", layout="wide")
 
-# 1. 加载数据并训练模型
+# 1. 加载数据并训练模型 (因为你没存模型文件，我们网页启动时临时训练一个，保证能用)
 @st.cache_resource
 def get_model_and_data():
     df = pd.read_csv('老年肌少症数字孪生专题数据集_已标注.csv')
 
-    # 清洗数据
-    # 1. 自动填补所有空值
+    # 【新增：清洗数据】
+    # 1. 自动填补所有空值（用中位数填充，这在医学数据处理里最稳妥）
     df = df.fillna(df.median())
 
-    # 2. 检查标签列有无缺失值
+    # 2. 检查一下标签列有没有缺失值，如果有，直接删掉那一行
     if df['Sarcopenia_Label'].isnull().any():
         df = df.dropna(subset=['Sarcopenia_Label'])
 
