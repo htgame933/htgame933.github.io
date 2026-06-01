@@ -1,120 +1,96 @@
-<html>
-<head>
-<title>app.py</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<style type="text/css">
-.s0 { color: #0033b3;}
-.s1 { color: #080808;}
-.s2 { color: #8c8c8c; font-style: italic;}
-.s3 { color: #067d17;}
-.s4 { color: #1750eb;}
-.s5 { color: #0037a6;}
-</style>
-</head>
-<body bgcolor="#ffffff">
-<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
-<tr><td><center>
-<font face="Arial, Helvetica" color="#000000">
-app.py</font>
-</center></td></tr></table>
-<pre><span class="s0">import </span><span class="s1">streamlit </span><span class="s0">as </span><span class="s1">st</span>
-<span class="s0">import </span><span class="s1">pandas </span><span class="s0">as </span><span class="s1">pd</span>
-<span class="s0">import </span><span class="s1">numpy </span><span class="s0">as </span><span class="s1">np</span>
-<span class="s0">import </span><span class="s1">seaborn </span><span class="s0">as </span><span class="s1">sns</span>
-<span class="s0">import </span><span class="s1">matplotlib.pyplot </span><span class="s0">as </span><span class="s1">plt</span>
-<span class="s0">from </span><span class="s1">sklearn.ensemble </span><span class="s0">import </span><span class="s1">RandomForestClassifier</span>
+import streamlit as st
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
 
-<span class="s2"># 设置页面</span>
-<span class="s1">st.set_page_config(page_title=</span><span class="s3">&quot;老年肌少症数字孪生系统&quot;</span><span class="s1">, layout=</span><span class="s3">&quot;wide&quot;</span><span class="s1">)</span>
+# 设置页面
+st.set_page_config(page_title="老年肌少症数字孪生系统", layout="wide")
 
+# 1. 加载数据并训练模型
+@st.cache_resource
+def get_model_and_data():
+    df = pd.read_csv('老年肌少症数字孪生专题数据集_已标注.csv')
 
-<span class="s2"># 1. 加载数据并训练模型 (因为你没存模型文件，我们网页启动时临时训练一个，保证能用)</span>
-<span class="s1">@st.cache_resource</span>
-<span class="s0">def </span><span class="s1">get_model_and_data():</span>
-    <span class="s1">df = pd.read_csv(</span><span class="s3">'老年肌少症数字孪生专题数据集_已标注.csv'</span><span class="s1">)</span>
+    # 清洗数据
+    # 1. 自动填补所有空值
+    df = df.fillna(df.median())
 
-    <span class="s2"># 【新增：清洗数据】</span>
-    <span class="s2"># 1. 自动填补所有空值（用中位数填充，这在医学数据处理里最稳妥）</span>
-    <span class="s1">df = df.fillna(df.median())</span>
+    # 2. 检查标签列有无缺失值
+    if df['Sarcopenia_Label'].isnull().any():
+        df = df.dropna(subset=['Sarcopenia_Label'])
 
-    <span class="s2"># 2. 检查一下标签列有没有缺失值，如果有，直接删掉那一行</span>
-    <span class="s0">if </span><span class="s1">df[</span><span class="s3">'Sarcopenia_Label'</span><span class="s1">].isnull().any():</span>
-        <span class="s1">df = df.dropna(subset=[</span><span class="s3">'Sarcopenia_Label'</span><span class="s1">])</span>
+    exclude_cols = ['ID', 'ivy', 'bloodweight', 'lgrip', 'rgrip', 'wspeed', 'max_grip', 'Sarcopenia_Label']
+    X_cols = [c for c in df.columns if c not in exclude_cols]
 
-    <span class="s1">exclude_cols = [</span><span class="s3">'ID'</span><span class="s1">, </span><span class="s3">'ivy'</span><span class="s1">, </span><span class="s3">'bloodweight'</span><span class="s1">, </span><span class="s3">'lgrip'</span><span class="s1">, </span><span class="s3">'rgrip'</span><span class="s1">, </span><span class="s3">'wspeed'</span><span class="s1">, </span><span class="s3">'max_grip'</span><span class="s1">, </span><span class="s3">'Sarcopenia_Label'</span><span class="s1">]</span>
-    <span class="s1">X_cols = [c </span><span class="s0">for </span><span class="s1">c </span><span class="s0">in </span><span class="s1">df.columns </span><span class="s0">if </span><span class="s1">c </span><span class="s0">not in </span><span class="s1">exclude_cols]</span>
+    # 临时训练模型
+    X = df[X_cols]
+    y = df['Sarcopenia_Label']
+    model = RandomForestClassifier().fit(X, y)
+    return model, X_cols, df[X_cols].median().to_dict()
 
-    <span class="s2"># 临时训练模型</span>
-    <span class="s1">X = df[X_cols]</span>
-    <span class="s1">y = df[</span><span class="s3">'Sarcopenia_Label'</span><span class="s1">]</span>
-    <span class="s1">model = RandomForestClassifier().fit(X, y)</span>
-    <span class="s0">return </span><span class="s1">model, X_cols, df[X_cols].median().to_dict()</span>
+with st.spinner('正在激活数字孪生系统计算引擎，请稍后...'):
+    rf_model, X_cols_base, feature_medians = get_model_and_data()
+st.success('数字孪生模拟系统已准备就绪')
 
-<span class="s0">with </span><span class="s1">st.spinner(</span><span class="s3">'正在激活数字孪生系统计算引擎，请稍后...'</span><span class="s1">):</span>
-    <span class="s1">rf_model, X_cols_base, feature_medians = get_model_and_data()</span>
-<span class="s1">st.success(</span><span class="s3">'数字孪生模拟系统已准备就绪'</span><span class="s1">)</span>
+# 2. 侧边栏 UI 输入区
+st.sidebar.header("👤 人口学基本表型")
+gender = st.sidebar.selectbox("性别", [("男性", 1.0), ("女性", 2.0)], format_func=lambda x: x[0])[1]
+age = st.sidebar.slider("年龄(岁)", 60, 95, 82)
+bmi = st.sidebar.slider("BMI", 14.0, 35.0, 15.8)
 
-<span class="s2"># 2. 侧边栏 UI 输入区</span>
-<span class="s1">st.sidebar.header(</span><span class="s3">&quot; 人口学基本表型&quot;</span><span class="s1">)</span>
-<span class="s1">gender = st.sidebar.selectbox(</span><span class="s3">&quot;性别&quot;</span><span class="s1">, [(</span><span class="s3">&quot;男性&quot;</span><span class="s1">, </span><span class="s4">1.0</span><span class="s1">), (</span><span class="s3">&quot;女性&quot;</span><span class="s1">, </span><span class="s4">2.0</span><span class="s1">)], format_func=</span><span class="s0">lambda </span><span class="s1">x: x[</span><span class="s4">0</span><span class="s1">])[</span><span class="s4">1</span><span class="s1">]</span>
-<span class="s1">age = st.sidebar.slider(</span><span class="s3">&quot;年龄(岁)&quot;</span><span class="s1">, </span><span class="s4">60</span><span class="s1">, </span><span class="s4">95</span><span class="s1">, </span><span class="s4">82</span><span class="s1">)</span>
-<span class="s1">bmi = st.sidebar.slider(</span><span class="s3">&quot;BMI&quot;</span><span class="s1">, </span><span class="s4">14.0</span><span class="s1">, </span><span class="s4">35.0</span><span class="s1">, </span><span class="s4">15.8</span><span class="s1">)</span>
+st.sidebar.header("🏃 行为与身体功能")
+sleep = st.sidebar.slider("睡眠时间(h)", 3.0, 10.0, 4.0)
+iadl = st.sidebar.slider("IADL评分", 0.0, 10.0, 5.0)
+smokev = st.sidebar.selectbox("吸烟史", [("否", 0.0), ("是", 1.0)], format_func=lambda x: x[0])[1]
+chronic = st.sidebar.slider("慢性病种数", 0, 8, 3)
+fall = st.sidebar.selectbox("两年跌倒史", [("无", 0.0), ("有", 1.0)], format_func=lambda x: x[0])[1]
 
-<span class="s1">st.sidebar.header(</span><span class="s3">&quot; 行为与身体功能&quot;</span><span class="s1">)</span>
-<span class="s1">sleep = st.sidebar.slider(</span><span class="s3">&quot;睡眠时间(h)&quot;</span><span class="s1">, </span><span class="s4">3.0</span><span class="s1">, </span><span class="s4">10.0</span><span class="s1">, </span><span class="s4">4.0</span><span class="s1">)</span>
-<span class="s1">iadl = st.sidebar.slider(</span><span class="s3">&quot;IADL评分&quot;</span><span class="s1">, </span><span class="s4">0.0</span><span class="s1">, </span><span class="s4">10.0</span><span class="s1">, </span><span class="s4">5.0</span><span class="s1">)</span>
-<span class="s1">smokev = st.sidebar.selectbox(</span><span class="s3">&quot;吸烟史&quot;</span><span class="s1">, [(</span><span class="s3">&quot;否&quot;</span><span class="s1">, </span><span class="s4">0.0</span><span class="s1">), (</span><span class="s3">&quot;是&quot;</span><span class="s1">, </span><span class="s4">1.0</span><span class="s1">)], format_func=</span><span class="s0">lambda </span><span class="s1">x: x[</span><span class="s4">0</span><span class="s1">])[</span><span class="s4">1</span><span class="s1">]</span>
-<span class="s1">chronic = st.sidebar.slider(</span><span class="s3">&quot;慢性病种数&quot;</span><span class="s1">, </span><span class="s4">0</span><span class="s1">, </span><span class="s4">8</span><span class="s1">, </span><span class="s4">3</span><span class="s1">)</span>
-<span class="s1">fall = st.sidebar.selectbox(</span><span class="s3">&quot;两年跌倒史&quot;</span><span class="s1">, [(</span><span class="s3">&quot;无&quot;</span><span class="s1">, </span><span class="s4">0.0</span><span class="s1">), (</span><span class="s3">&quot;有&quot;</span><span class="s1">, </span><span class="s4">1.0</span><span class="s1">)], format_func=</span><span class="s0">lambda </span><span class="s1">x: x[</span><span class="s4">0</span><span class="s1">])[</span><span class="s4">1</span><span class="s1">]</span>
+st.sidebar.header("🩸 微观生化指标")
+crea = st.sidebar.slider("初始血肌酐", 0.2, 1.5, 0.45)
+cysc = st.sidebar.slider("C胱抑素C", 0.5, 2.5, 1.65)
+hgb = st.sidebar.slider("血红蛋白", 8.0, 18.0, 10.5)
+glu = st.sidebar.slider("空腹血糖", 3.0, 12.0, 5.5)
+crp = st.sidebar.slider("C反应蛋白", 0.1, 15.0, 6.2)
+wbc = st.sidebar.slider("白细胞计数", 3.0, 15.0, 7.0)
 
-<span class="s1">st.sidebar.header(</span><span class="s3">&quot; 微观生化指标&quot;</span><span class="s1">)</span>
-<span class="s1">crea = st.sidebar.slider(</span><span class="s3">&quot;初始血肌酐&quot;</span><span class="s1">, </span><span class="s4">0.2</span><span class="s1">, </span><span class="s4">1.5</span><span class="s1">, </span><span class="s4">0.45</span><span class="s1">)</span>
-<span class="s1">cysc = st.sidebar.slider(</span><span class="s3">&quot;C胱抑素C&quot;</span><span class="s1">, </span><span class="s4">0.5</span><span class="s1">, </span><span class="s4">2.5</span><span class="s1">, </span><span class="s4">1.65</span><span class="s1">)</span>
-<span class="s1">hgb = st.sidebar.slider(</span><span class="s3">&quot;血红蛋白&quot;</span><span class="s1">, </span><span class="s4">8.0</span><span class="s1">, </span><span class="s4">18.0</span><span class="s1">, </span><span class="s4">10.5</span><span class="s1">)</span>
-<span class="s1">glu = st.sidebar.slider(</span><span class="s3">&quot;空腹血糖&quot;</span><span class="s1">, </span><span class="s4">3.0</span><span class="s1">, </span><span class="s4">12.0</span><span class="s1">, </span><span class="s4">5.5</span><span class="s1">)</span>
-<span class="s1">crp = st.sidebar.slider(</span><span class="s3">&quot;C反应蛋白&quot;</span><span class="s1">, </span><span class="s4">0.1</span><span class="s1">, </span><span class="s4">15.0</span><span class="s1">, </span><span class="s4">6.2</span><span class="s1">)</span>
-<span class="s1">wbc = st.sidebar.slider(</span><span class="s3">&quot;白细胞计数&quot;</span><span class="s1">, </span><span class="s4">3.0</span><span class="s1">, </span><span class="s4">15.0</span><span class="s1">, </span><span class="s4">7.0</span><span class="s1">)</span>
+# 3. 干预决策区
+st.subheader("🎯 临床虚拟管理策略")
+chk_exercise = st.checkbox("处方 A：定制化抗阻功能训练")
+chk_nutrition = st.checkbox("处方 B：高蛋白膳食与纠正贫血")
+chk_biomed = st.checkbox("处方 C：微观代谢纠正与抗炎调理")
 
-<span class="s2"># 3. 干预决策区</span>
-<span class="s1">st.subheader(</span><span class="s3">&quot; 临床虚拟管理策略&quot;</span><span class="s1">)</span>
-<span class="s1">chk_exercise = st.checkbox(</span><span class="s3">&quot;处方 A:定制化抗阻功能训练&quot;</span><span class="s1">)</span>
-<span class="s1">chk_nutrition = st.checkbox(</span><span class="s3">&quot;处方 B:高蛋白膳食与纠正贫血&quot;</span><span class="s1">)</span>
-<span class="s1">chk_biomed = st.checkbox(</span><span class="s3">&quot;处方 C:微观代谢纠正与抗炎调理&quot;</span><span class="s1">)</span>
+# 4. 计算引擎
+if st.button("🔮 启动临床机制推演"):
+    # 构建 twin_v0
+    twin_v0 = {col: feature_medians[col] for col in X_cols_base}
+    twin_v0.update({'gender': gender, 'age': age, 'bmi': bmi, 'sleep': sleep, 'iadl': iadl,
+                    'smokev': smokev, 'chronic': chronic, 'fall_down': fall, 'bl_crea': crea,
+                    'bl_cysc': cysc, 'bl_hgb': hgb, 'bl_glu': glu, 'bl_crp': crp, 'bl_wbc': wbc, 'exercise': 0.0})
 
-<span class="s2"># 4. 计算引擎</span>
-<span class="s0">if </span><span class="s1">st.button(</span><span class="s3">&quot; 启动临床机制推演&quot;</span><span class="s1">):</span>
-    <span class="s2"># 构建 twin_v0</span>
-    <span class="s1">twin_v0 = {col: feature_medians[col] </span><span class="s0">for </span><span class="s1">col </span><span class="s0">in </span><span class="s1">X_cols_base}</span>
-    <span class="s1">twin_v0.update({</span><span class="s3">'gender'</span><span class="s1">: gender, </span><span class="s3">'age'</span><span class="s1">: age, </span><span class="s3">'bmi'</span><span class="s1">: bmi, </span><span class="s3">'sleep'</span><span class="s1">: sleep, </span><span class="s3">'iadl'</span><span class="s1">: iadl,</span>
-                    <span class="s3">'smokev'</span><span class="s1">: smokev, </span><span class="s3">'chronic'</span><span class="s1">: chronic, </span><span class="s3">'fall_down'</span><span class="s1">: fall, </span><span class="s3">'bl_crea'</span><span class="s1">: crea,</span>
-                    <span class="s3">'bl_cysc'</span><span class="s1">: cysc, </span><span class="s3">'bl_hgb'</span><span class="s1">: hgb, </span><span class="s3">'bl_glu'</span><span class="s1">: glu, </span><span class="s3">'bl_crp'</span><span class="s1">: crp, </span><span class="s3">'bl_wbc'</span><span class="s1">: wbc, </span><span class="s3">'exercise'</span><span class="s1">: </span><span class="s4">0.0</span><span class="s1">})</span>
+    prob_v0 = rf_model.predict_proba(pd.DataFrame([twin_v0]))[0, 1]
 
-    <span class="s1">prob_v0 = rf_model.predict_proba(pd.DataFrame([twin_v0]))[</span><span class="s4">0</span><span class="s1">, </span><span class="s4">1</span><span class="s1">]</span>
+    # 模拟干预
+    twin_v1 = twin_v0.copy()
+    synergy = 1.25 if (chk_exercise and chk_nutrition) else 1.0
 
-    <span class="s2"># 模拟干预</span>
-    <span class="s1">twin_v1 = twin_v0.copy()</span>
-    <span class="s1">synergy = </span><span class="s4">1.25 </span><span class="s0">if </span><span class="s1">(chk_exercise </span><span class="s0">and </span><span class="s1">chk_nutrition) </span><span class="s0">else </span><span class="s4">1.0</span>
+    if chk_exercise:
+        twin_v1.update({'exercise': 1.0, 'bl_crea': twin_v1['bl_crea'] * (1 + 0.2 * synergy),
+                        'iadl': max(0, twin_v1['iadl'] - 2 * synergy)})
+    if chk_nutrition:
+        twin_v1['bl_hgb'] = min(twin_v1['bl_hgb'] * (1 + 0.15 * synergy), feature_medians['bl_hgb'])
+    if chk_biomed:
+        twin_v1.update({'bl_crp': twin_v1['bl_crp'] * 0.6, 'bl_cysc': twin_v1['bl_cysc'] * 0.85, 'sleep': 7.0,
+                        'bl_glu': feature_medians['bl_glu'], 'bl_wbc': feature_medians['bl_wbc'], 'smokev': 0.0})
 
-    <span class="s0">if </span><span class="s1">chk_exercise:</span>
-        <span class="s1">twin_v1.update({</span><span class="s3">'exercise'</span><span class="s1">: </span><span class="s4">1.0</span><span class="s1">, </span><span class="s3">'bl_crea'</span><span class="s1">: twin_v1[</span><span class="s3">'bl_crea'</span><span class="s1">] * (</span><span class="s4">1 </span><span class="s1">+ </span><span class="s4">0.2 </span><span class="s1">* synergy),</span>
-                        <span class="s3">'iadl'</span><span class="s1">: max(</span><span class="s4">0</span><span class="s1">, twin_v1[</span><span class="s3">'iadl'</span><span class="s1">] - </span><span class="s4">2 </span><span class="s1">* synergy)})</span>
-    <span class="s0">if </span><span class="s1">chk_nutrition:</span>
-        <span class="s1">twin_v1[</span><span class="s3">'bl_hgb'</span><span class="s1">] = min(twin_v1[</span><span class="s3">'bl_hgb'</span><span class="s1">] * (</span><span class="s4">1 </span><span class="s1">+ </span><span class="s4">0.15 </span><span class="s1">* synergy), feature_medians[</span><span class="s3">'bl_hgb'</span><span class="s1">])</span>
-    <span class="s0">if </span><span class="s1">chk_biomed:</span>
-        <span class="s1">twin_v1.update({</span><span class="s3">'bl_crp'</span><span class="s1">: twin_v1[</span><span class="s3">'bl_crp'</span><span class="s1">] * </span><span class="s4">0.6</span><span class="s1">, </span><span class="s3">'bl_cysc'</span><span class="s1">: twin_v1[</span><span class="s3">'bl_cysc'</span><span class="s1">] * </span><span class="s4">0.85</span><span class="s1">, </span><span class="s3">'sleep'</span><span class="s1">: </span><span class="s4">7.0</span><span class="s1">,</span>
-                        <span class="s3">'bl_glu'</span><span class="s1">: feature_medians[</span><span class="s3">'bl_glu'</span><span class="s1">], </span><span class="s3">'bl_wbc'</span><span class="s1">: feature_medians[</span><span class="s3">'bl_wbc'</span><span class="s1">], </span><span class="s3">'smokev'</span><span class="s1">: </span><span class="s4">0.0</span><span class="s1">})</span>
+    prob_v1 = rf_model.predict_proba(pd.DataFrame([twin_v1]))[0, 1]
 
-    <span class="s1">prob_v1 = rf_model.predict_proba(pd.DataFrame([twin_v1]))[</span><span class="s4">0</span><span class="s1">, </span><span class="s4">1</span><span class="s1">]</span>
+    # 展示图表
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.barplot(x=['干预前', '干预后'], y=[prob_v0, prob_v1], palette=['#e74c3c', '#2ecc71'])
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
+    st.pyplot(fig)
 
-    <span class="s2"># 展示图表</span>
-    <span class="s1">fig, ax = plt.subplots(figsize=(</span><span class="s4">6</span><span class="s1">, </span><span class="s4">4</span><span class="s1">))</span>
-    <span class="s1">sns.barplot(x=[</span><span class="s3">'干预前'</span><span class="s1">, </span><span class="s3">'干预后'</span><span class="s1">], y=[prob_v0, prob_v1], palette=[</span><span class="s3">'#e74c3c'</span><span class="s1">, </span><span class="s3">'#2ecc71'</span><span class="s1">])</span>
-    <span class="s1">plt.rcParams[</span><span class="s3">'font.sans-serif'</span><span class="s1">] = [</span><span class="s3">'SimHei'</span><span class="s1">]</span>
-    <span class="s1">plt.rcParams[</span><span class="s3">'axes.unicode_minus'</span><span class="s1">] = </span><span class="s0">False</span>
-    <span class="s1">st.pyplot(fig)</span>
-
-    <span class="s1">st.write(</span><span class="s3">f&quot;### 评估结果:风险概率从 </span><span class="s5">{</span><span class="s1">prob_v0</span><span class="s5">:</span><span class="s3">.2%</span><span class="s5">} </span><span class="s3">降至 </span><span class="s5">{</span><span class="s1">prob_v1</span><span class="s5">:</span><span class="s3">.2%</span><span class="s5">}</span><span class="s3">&quot;</span><span class="s1">)</span>
-
-</pre>
-</body>
-</html>
+    st.write(f"### 评估结果: 风险概率从 {prob_v0:.2%} 降至 {prob_v1:.2%}")
