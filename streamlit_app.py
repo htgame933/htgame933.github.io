@@ -55,19 +55,19 @@ app.py</font>
 <span class="s1">st.success(</span><span class="s3">'数字孪生模拟系统已准备就绪'</span><span class="s1">)</span>
 
 <span class="s2"># 2. 侧边栏 UI 输入区</span>
-<span class="s1">st.sidebar.header(</span><span class="s3">&quot;👤 人口学基本表型&quot;</span><span class="s1">)</span>
+<span class="s1">st.sidebar.header(</span><span class="s3">&quot; 人口学基本表型&quot;</span><span class="s1">)</span>
 <span class="s1">gender = st.sidebar.selectbox(</span><span class="s3">&quot;性别&quot;</span><span class="s1">, [(</span><span class="s3">&quot;男性&quot;</span><span class="s1">, </span><span class="s4">1.0</span><span class="s1">), (</span><span class="s3">&quot;女性&quot;</span><span class="s1">, </span><span class="s4">2.0</span><span class="s1">)], format_func=</span><span class="s0">lambda </span><span class="s1">x: x[</span><span class="s4">0</span><span class="s1">])[</span><span class="s4">1</span><span class="s1">]</span>
 <span class="s1">age = st.sidebar.slider(</span><span class="s3">&quot;年龄(岁)&quot;</span><span class="s1">, </span><span class="s4">60</span><span class="s1">, </span><span class="s4">95</span><span class="s1">, </span><span class="s4">82</span><span class="s1">)</span>
 <span class="s1">bmi = st.sidebar.slider(</span><span class="s3">&quot;BMI&quot;</span><span class="s1">, </span><span class="s4">14.0</span><span class="s1">, </span><span class="s4">35.0</span><span class="s1">, </span><span class="s4">15.8</span><span class="s1">)</span>
 
-<span class="s1">st.sidebar.header(</span><span class="s3">&quot;🏃 行为与身体功能&quot;</span><span class="s1">)</span>
+<span class="s1">st.sidebar.header(</span><span class="s3">&quot; 行为与身体功能&quot;</span><span class="s1">)</span>
 <span class="s1">sleep = st.sidebar.slider(</span><span class="s3">&quot;睡眠时间(h)&quot;</span><span class="s1">, </span><span class="s4">3.0</span><span class="s1">, </span><span class="s4">10.0</span><span class="s1">, </span><span class="s4">4.0</span><span class="s1">)</span>
 <span class="s1">iadl = st.sidebar.slider(</span><span class="s3">&quot;IADL评分&quot;</span><span class="s1">, </span><span class="s4">0.0</span><span class="s1">, </span><span class="s4">10.0</span><span class="s1">, </span><span class="s4">5.0</span><span class="s1">)</span>
 <span class="s1">smokev = st.sidebar.selectbox(</span><span class="s3">&quot;吸烟史&quot;</span><span class="s1">, [(</span><span class="s3">&quot;否&quot;</span><span class="s1">, </span><span class="s4">0.0</span><span class="s1">), (</span><span class="s3">&quot;是&quot;</span><span class="s1">, </span><span class="s4">1.0</span><span class="s1">)], format_func=</span><span class="s0">lambda </span><span class="s1">x: x[</span><span class="s4">0</span><span class="s1">])[</span><span class="s4">1</span><span class="s1">]</span>
 <span class="s1">chronic = st.sidebar.slider(</span><span class="s3">&quot;慢性病种数&quot;</span><span class="s1">, </span><span class="s4">0</span><span class="s1">, </span><span class="s4">8</span><span class="s1">, </span><span class="s4">3</span><span class="s1">)</span>
 <span class="s1">fall = st.sidebar.selectbox(</span><span class="s3">&quot;两年跌倒史&quot;</span><span class="s1">, [(</span><span class="s3">&quot;无&quot;</span><span class="s1">, </span><span class="s4">0.0</span><span class="s1">), (</span><span class="s3">&quot;有&quot;</span><span class="s1">, </span><span class="s4">1.0</span><span class="s1">)], format_func=</span><span class="s0">lambda </span><span class="s1">x: x[</span><span class="s4">0</span><span class="s1">])[</span><span class="s4">1</span><span class="s1">]</span>
 
-<span class="s1">st.sidebar.header(</span><span class="s3">&quot;🩸 微观生化指标&quot;</span><span class="s1">)</span>
+<span class="s1">st.sidebar.header(</span><span class="s3">&quot; 微观生化指标&quot;</span><span class="s1">)</span>
 <span class="s1">crea = st.sidebar.slider(</span><span class="s3">&quot;初始血肌酐&quot;</span><span class="s1">, </span><span class="s4">0.2</span><span class="s1">, </span><span class="s4">1.5</span><span class="s1">, </span><span class="s4">0.45</span><span class="s1">)</span>
 <span class="s1">cysc = st.sidebar.slider(</span><span class="s3">&quot;C胱抑素C&quot;</span><span class="s1">, </span><span class="s4">0.5</span><span class="s1">, </span><span class="s4">2.5</span><span class="s1">, </span><span class="s4">1.65</span><span class="s1">)</span>
 <span class="s1">hgb = st.sidebar.slider(</span><span class="s3">&quot;血红蛋白&quot;</span><span class="s1">, </span><span class="s4">8.0</span><span class="s1">, </span><span class="s4">18.0</span><span class="s1">, </span><span class="s4">10.5</span><span class="s1">)</span>
@@ -76,13 +76,13 @@ app.py</font>
 <span class="s1">wbc = st.sidebar.slider(</span><span class="s3">&quot;白细胞计数&quot;</span><span class="s1">, </span><span class="s4">3.0</span><span class="s1">, </span><span class="s4">15.0</span><span class="s1">, </span><span class="s4">7.0</span><span class="s1">)</span>
 
 <span class="s2"># 3. 干预决策区</span>
-<span class="s1">st.subheader(</span><span class="s3">&quot;🎯 临床虚拟管理策略&quot;</span><span class="s1">)</span>
+<span class="s1">st.subheader(</span><span class="s3">&quot; 临床虚拟管理策略&quot;</span><span class="s1">)</span>
 <span class="s1">chk_exercise = st.checkbox(</span><span class="s3">&quot;处方 A：定制化抗阻功能训练&quot;</span><span class="s1">)</span>
 <span class="s1">chk_nutrition = st.checkbox(</span><span class="s3">&quot;处方 B：高蛋白膳食与纠正贫血&quot;</span><span class="s1">)</span>
 <span class="s1">chk_biomed = st.checkbox(</span><span class="s3">&quot;处方 C：微观代谢纠正与抗炎调理&quot;</span><span class="s1">)</span>
 
 <span class="s2"># 4. 计算引擎</span>
-<span class="s0">if </span><span class="s1">st.button(</span><span class="s3">&quot;🔮 启动临床机制推演&quot;</span><span class="s1">):</span>
+<span class="s0">if </span><span class="s1">st.button(</span><span class="s3">&quot; 启动临床机制推演&quot;</span><span class="s1">):</span>
     <span class="s2"># 构建 twin_v0</span>
     <span class="s1">twin_v0 = {col: feature_medians[col] </span><span class="s0">for </span><span class="s1">col </span><span class="s0">in </span><span class="s1">X_cols_base}</span>
     <span class="s1">twin_v0.update({</span><span class="s3">'gender'</span><span class="s1">: gender, </span><span class="s3">'age'</span><span class="s1">: age, </span><span class="s3">'bmi'</span><span class="s1">: bmi, </span><span class="s3">'sleep'</span><span class="s1">: sleep, </span><span class="s3">'iadl'</span><span class="s1">: iadl,</span>
