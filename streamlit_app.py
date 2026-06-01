@@ -113,7 +113,7 @@ app.py</font>
     <span class="s1">plt.rcParams[</span><span class="s3">'axes.unicode_minus'</span><span class="s1">] = </span><span class="s0">False</span>
     <span class="s1">st.pyplot(fig)</span>
 
-    <span class="s1">st.write(</span><span class="s3">f&quot;### 评估结果: 风险概率从 </span><span class="s5">{</span><span class="s1">prob_v0</span><span class="s5">:</span><span class="s3">.2%</span><span class="s5">} </span><span class="s3">降至 </span><span class="s5">{</span><span class="s1">prob_v1</span><span class="s5">:</span><span class="s3">.2%</span><span class="s5">}</span><span class="s3">&quot;</span><span class="s1">)</span>
+    <span class="s1">st.write(</span><span class="s3">f&quot;### 评估结果:风险概率从 </span><span class="s5">{</span><span class="s1">prob_v0</span><span class="s5">:</span><span class="s3">.2%</span><span class="s5">} </span><span class="s3">降至 </span><span class="s5">{</span><span class="s1">prob_v1</span><span class="s5">:</span><span class="s3">.2%</span><span class="s5">}</span><span class="s3">&quot;</span><span class="s1">)</span>
 
 </pre>
 </body>
